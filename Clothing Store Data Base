@@ -1,0 +1,32 @@
+-Create a clothing store data base
+
+CREATE TABLE store (id INTEGER PRIMARY KEY, name TEXT, color TEXT, size TEXT, quantity INTEGER, price INTEGER);
+
+INSERT INTO store VALUES (1, "dress", "black", "L", 5, 25);
+INSERT INTO store VALUES (2, "tshirt", "black", "L", 10, 15);
+INSERT INTO store VALUES (3, "tshirt", "white", "L", 10, 15);
+INSERT INTO store VALUES (4, "tshirt", "green", "L", 5, 15);
+INSERT INTO store VALUES (5, "jeans", "black", "L", 15, 35);
+INSERT INTO store VALUES (6, "sweatshirt", "black", "XL", 10, 25);
+INSERT INTO store VALUES (7, 'sweatshirt', 'white', 'XL', 10, 25);
+INSERT INTO store VALUES (8, 'sweatshirt', 'green', 'XL', 10, 25);
+INSERT INTO store VALUES (9, 'sweater', 'white', 'XL', 10, 20);
+INSERT INTO store VALUES (10, 'sweater', 'black', 'XL', 10, 20);
+INSERT INTO store VALUES (11, 'sweater', 'brown', 'XL', 10, 20);
+INSERT INTO store VALUES (12, 'sweater', 'green', 'XL', 10, 20);
+INSERT INTO store VALUES (13, 'socks', 'white', 'L', 5, 2);
+INSERT INTO store VALUES (14, 'socks', 'black', 'L', 5, 2);
+INSERT INTO store VALUES (15, 'socks', 'stripes', 'L', 5, 2);
+
+-Display the sum(price) of all items in the store
+What is the total price for all items in store?
+SELECT * FROM store;
+SELECT SUM(price) FROM store;
+
+-Ordered the stock by price descending
+What is the most expensive to least expensive?
+SELECT * FROM store ORDER BY price DESC;
+
+-Ordered clothing by color and size
+What are the most popular colors and sizes?
+SELECT * FROM store ORDER BY color, size;
