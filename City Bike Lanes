@@ -1,0 +1,52 @@
+First, I created a table called CityBikeLanes in SQLite Studio using the query:
+
+CREATE TABLE BIT_DB.CityBikeLanes (
+id integer primary key,
+year_installed year not null,
+year_updated year not null,
+street varchar not null,
+width_feet integer not null,
+safetyrating integer not null,
+protected varchar not null)
+
+Now that I created the CityBikeLanes, I inserted some data into the table.
+
+
+After inserting the data, I ran the query:
+SELECT * FROM CityBikeLanes LIMIT 10
+To get familiar with the columns in the table.
+
+Next I used a CTE to create a table with a list of all the bike lanes that have an average safety rating of 4.0 or higher. 
+I also wanted to see the average safety rating for each of those bike lanes, and a labeled them as a "Safe Lane".
+
+This is the query I used:
+WITH avg_saferating_CTE AS 
+(SELECT c.street,
+AVG(c.safetyrating) AS average_safetyrating
+FROM CityBikeLanes c
+GROUP by c.street)
+ 
+SELECT street, average_safetyrating,
+'Safe Lane' as tag
+FROM avg_saferating_CTE
+WHERE average_safetyrating>4.0;
+
+
+
+Next I used a window function to aggregate data on the bike lanes that should be removed, left as is, or needed some improvements.
+To do this I:
+Labeled bike lanes with an average safety rating of 4 or more as "Leave As-Is".
+Bike lanes with an average safety rating of less than 2.5 I labeled as "Remove".
+All other bike lanes I labeled as "Improvements Needed".
+
+I used this query to do so:
+
+SELECT street, safetyrating,
+AVG(safetyrating) OVER (PARTITION BY street) as "Average_safety_rating",
+ 
+CASE
+WHEN AVG(safetyrating) OVER (PARTITION BY safetyrating)>=4 THEN "Leave As-Is"
+WHEN AVG(safetyrating) OVER (PARTITION BY safetyrating) <2.5 THEN "Remove"
+ELSE "Improvements Needed"
+END as "Recommendation"
+FROM CityBikeLanes;
