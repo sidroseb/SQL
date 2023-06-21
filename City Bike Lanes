@@ -24,8 +24,7 @@ WITH avg_saferating_CTE AS
 (SELECT c.street,
 AVG(c.safetyrating) AS average_safetyrating
 FROM CityBikeLanes c
-GROUP by c.street)
- 
+GROUP by c.street) 
 SELECT street, average_safetyrating,
 'Safe Lane' as tag
 FROM avg_saferating_CTE
@@ -37,13 +36,12 @@ Next I used a window function to aggregate data on the bike lanes that should be
 To do this I:
 Labeled bike lanes with an average safety rating of 4 or more as "Leave As-Is".
 Bike lanes with an average safety rating of less than 2.5 I labeled as "Remove".
-All other bike lanes I labeled as "Improvements Needed".
+All other bike lanes I labeled as "Improvements Needed."
 
 I used this query to do so:
 
 SELECT street, safetyrating,
 AVG(safetyrating) OVER (PARTITION BY street) as "Average_safety_rating",
- 
 CASE
 WHEN AVG(safetyrating) OVER (PARTITION BY safetyrating)>=4 THEN "Leave As-Is"
 WHEN AVG(safetyrating) OVER (PARTITION BY safetyrating) <2.5 THEN "Remove"
