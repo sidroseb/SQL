@@ -1,44 +1,76 @@
 I worked with a dataset called chinook, which represents a digital media store and includes tables 
 for artists, albums, media tracks, invoices, and customers. 
 
-#1. Show Customers who are not in the US:
-SELECT FirstName, LastName, CustomerId, Country 
-FROM chinook.customers 
-WHERE Country != "USA";
+#Get to know the customers table
+SELECT * FROM chinook.customers;
 
-#2. Show only the Customers from Brazil:
-SELECT * FROM chinook.customers 
-WHERE Country = "Brazil" ;
+#1 Show Customers (their full names, customer ID, and country) who are not in the US. 
 
-#3. Find the Invoices of customers who are from Brazil. 
-The resulting table should shows customer's full name, Invoice ID, Date of the invoice, and billing country:
+SELECT CustomerId, FirstName, LastName, Country
+FROM chinook.customers
+WHERE Country <> 'USA';
 
-SELECT cust.FirstName, cust.LastName, inv.InvoiceId, inv.BillingCountry, inv.InvoiceDate
-FROM chinook.invoices as inv 
-LEFT JOIN chinook.customers as cust 
-on inv.CustomerId = cust.CustomerId 
-WHERE inv.BillingCountry = "Brazil";
+Consolidate the first and last name to create a fullname:
+SELECT FirstName || ' ' || LastName AS Full_Name, CustomerId, Country
+FROM chinook.customers
+WHERE NOT Country = 'USA';
 
-#4. This shows the Employees who are Sales Agents:
-SELECT * FROM chinook.Employees
-WHERE Title = "Sales Support Agent" ;
+#2 Show only the Customers from Brazil.
 
-#5. I found unique/distinct list of billing countries from the Invoice table:
-SELECT DISTINCT BillingCountry FROM chinook.Invoices ;
+SELECT CustomerId, FirstName, LastName, Country
+FROM chinook.customers
+WHERE Country = 'Brazil';
 
-#6. This is a query that shows the invoices associated with each sales agent. The resulting table includes the Sales Agent's full name:
+#3 Find the Invoices of customers who are from Brazil. 
+The resulting table should show the customer's full name, 
+Invoice ID, Date of the invoice, and billing country.
 
-SELECT emp.LastName, emp.Firstname, inv.InvoiceId
-FROM chinook.Employees emp 
-JOIN chinook.Customers cust ON cust.SupportRepId = emp.EmployeeId
-JOIN chinook.Invoices Inv ON Inv.CustomerId = cust.CustomerId;
+SELECT FirstName || ' ' || LastName AS Full_Name, Invoiceid, 
+InvoiceDate, BillingCountry
+FROM chinook.invoices inv
+JOIN chinook.customers cust
+on inv.customerid = cust.customerid
+WHERE BillingCountry = 'Brazil';
 
-#7. This query shows the Invoice Total, Customer name, Country, and Sales Agent name for all invoices and customers:
+#4 Show the Employees who are Sales Agents.
 
-SELECT emp.LastName, emp.Firstname, cust.FirstName, cust.LastName, cust.Country, inv.total
-FROM chinook.employees emp 
-JOIN chinook.Customers cust ON cust.SupportRepId = emp.EmployeeId
-JOIN chinook.Invoices Inv ON Inv.CustomerId = cust.CustomerId;
+SELECT FirstName || ' ' || LastName AS Full_Name, title
+FROM chinook.employees
+WHERE Title LIKE '%Sales%';
+
+#5 Find a unique/distinct list of billing countries 
+from the Invoice table.
+
+SELECT DISTINCT(BillingCountry) 
+FROM chinook.invoices;
+
+#6 Provide a query that shows the invoices associated with each sales agent. 
+The resulting table should include the Sales Agent's full name.
+
+SELECT e.FirstName || ' ' || e.LastName AS Sales_Agent_Name, i.InvoiceId, i.InvoiceDate, i.BillingCountry
+FROM chinook.employees e
+JOIN chinook.customers c ON e.EmployeeId = c.SupportRepId
+JOIN chinook.invoices i ON c.CustomerId = i.CustomerId
+ORDER BY Sales_Agent_Name;
+
+#7 Show the Invoice Total, Customer name, Country, 
+and Sales Agent name for all invoices and customers.
+
+SELECT i.Total AS Invoice_Total, c.FirstName || ' ' || c.LastName AS Customer_Name, 
+c.Country, e.FirstName || ' ' || e.LastName AS Sales_Agent_Name
+FROM chinook.invoices i
+JOIN chinook.customers c ON i.CustomerId = c.CustomerId
+JOIN chinook.employees e ON c.SupportRepId = e.EmployeeId;
+
+This query shows each customer and the total amount they spent:
+
+SELECT c.FirstName || ' ' || c.LastName AS Customer_Name, c.Country, 
+e.FirstName || ' ' || e.LastName AS Sales_Agent_Name, SUM(i.Total) AS Total_Invoice
+FROM chinook.invoices i
+JOIN chinook.customers c ON i.CustomerId = c.CustomerId
+JOIN chinook.employees e ON c.SupportRepId = e.EmployeeId
+GROUP BY c.CustomerId
+ORDER BY Total_Invoice DESC;
 
 #8. This shows how many invoices there were in 2009.
 SELECT COUNT(*)
